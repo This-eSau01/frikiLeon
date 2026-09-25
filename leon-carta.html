@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El corazón de una Friki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#1c120c;
+    --bg-mid:#5b2e1a;
+    --bg-glow:#e8873a;
+    --mane-1:#d98e3f;
+    --mane-2:#b5651d;
+    --mane-3:#8f4a17;
+    --face:#f2d9a4;
+    --muzzle:#fbefd9;
+    --heart:#c1272d;
+    --heart-dark:#8f1c20;
+    --heart-glow:#ffb199;
+    --card-bg:#fff6e9;
+    --text-dark:#2b1b12;
+    --text-soft:#6b4a30;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:'Karla',sans-serif;
+    background:
+      radial-gradient(120% 80% at 50% 0%, var(--bg-glow) 0%, transparent 55%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 60%, #7a3a1c 100%);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+    overflow-x:hidden;
+    position:relative;
+  }
+  .stars span{
+    position:absolute;
+    width:3px;height:3px;
+    background:#ffe9c7;
+    border-radius:50%;
+    opacity:.6;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(1.6rem, 4vw, 2.4rem);
+    color:#fbefd9;
+    margin:0 0 6px;
+    text-align:center;
+    letter-spacing:.2px;
+  }
+  p.sub{
+    color:#e6c9a0;
+    margin:0 0 28px;
+    text-align:center;
+    font-size:1rem;
+  }
+  .stage{
+    position:relative;
+    width:min(360px, 80vw);
+    aspect-ratio:1/1;
+  }
+  .lion-svg{width:100%;height:100%;display:block;overflow:visible;}
+  .heart-btn{
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center;
+    animation:beat 1.6s ease-in-out infinite;
+  }
+  .heart-btn:hover{filter:brightness(1.15);}
+  .heart-btn:focus{outline:3px solid #ffe0a3;outline-offset:3px;border-radius:8px;}
+  @keyframes beat{
+    0%,100%{transform:scale(1);}
+    25%{transform:scale(1.12);}
+    40%{transform:scale(0.97);}
+  }
+  .stage.launched .heart-btn{animation:none;}
+  .instructions{
+    margin-top:22px;
+    color:#f2d9a4;
+    font-size:.95rem;
+    text-align:center;
+    min-height:1.4em;
+  }
+
+  /* Card */
+  .card-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(20,12,7,0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    transition:background .4s ease;
+    z-index:10;
+  }
+  .card-overlay.show{
+    background:rgba(20,12,7,.55);
+    pointer-events:auto;
+  }
+  .card{
+    width:min(320px, 86vw);
+    background:var(--card-bg);
+    border-radius:14px;
+    padding:34px 26px 30px;
+    box-shadow:0 30px 60px rgba(0,0,0,.45);
+    text-align:center;
+    position:relative;
+    transform:translateY(40px) scale(.85) rotate(-3deg);
+    opacity:0;
+    transition:transform .55s cubic-bezier(.2,1.4,.4,1), opacity .4s ease;
+  }
+  .card-overlay.show .card{
+    transform:translateY(0) scale(1) rotate(0deg);
+    opacity:1;
+  }
+  .card-heart{
+    width:34px;height:34px;
+    margin:0 auto 14px;
+    color:var(--heart);
+  }
+  .card h2{
+    font-family:'Fraunces',serif;
+    font-size:1.3rem;
+    color:var(--text-dark);
+    margin:0 0 12px;
+  }
+  .card p{
+    color:var(--text-soft);
+    font-size:.98rem;
+    line-height:1.55;
+    margin:0 0 22px;
+  }
+  .card button.close{
+    font-family:'Karla',sans-serif;
+    font-weight:700;
+    font-size:.9rem;
+    background:var(--heart);
+    color:#fff6e9;
+    border:none;
+    padding:10px 22px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .card button.close:hover{background:var(--heart-dark);}
+
+  .sparkle{
+    position:absolute;
+    pointer-events:none;
+    font-size:1.1rem;
+    opacity:0;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .heart-btn{animation:none;}
+    .card{transition:opacity .3s ease;}
+  }
+</style>
+</head>
+<body>
+
+<h1>Hay un punto rojo en su Pecho</h1>
+<p class="sub">Que hay algo guardado</p>
+
+<div class="stage" id="stage">
+  <svg class="lion-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- ground shadow -->
+    <ellipse cx="200" cy="378" rx="98" ry="14" fill="rgba(0,0,0,.28)"></ellipse>
+
+    <!-- mane -->
+    <g class="mane">
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(0 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(12.5 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(45 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(67.5 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(90 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(112.5 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(135 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(157.5 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(180 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(202.5 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(225 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(247.5 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(270 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(292.5 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-3)" transform="rotate(315 200 200)"></path>
+      <path d="M200 55 C 212 82, 216 112, 200 132 C 184 112, 188 82, 200 55 Z" fill="var(--mane-2)" transform="rotate(337.5 200 200)"></path>
+    </g>
+    <circle cx="200" cy="200" r="112" fill="var(--mane-1)"></circle>
+
+    <!-- head -->
+    <circle cx="200" cy="205" r="92" fill="var(--face)"></circle>
+    <ellipse cx="200" cy="255" rx="52" ry="40" fill="var(--muzzle)"></ellipse>
+
+    <!-- ears -->
+    <circle cx="140" cy="140" r="20" fill="var(--mane-2)"></circle>
+    <circle cx="260" cy="140" r="20" fill="var(--mane-2)"></circle>
+    <circle cx="140" cy="140" r="10" fill="var(--face)"></circle>
+    <circle cx="260" cy="140" r="10" fill="var(--face)"></circle>
+
+    <!-- eyes -->
+    <ellipse cx="172" cy="195" rx="9" ry="11" fill="var(--text-dark)"></ellipse>
+    <ellipse cx="228" cy="195" rx="9" ry="11" fill="var(--text-dark)"></ellipse>
+    <circle cx="175" cy="191" r="2.5" fill="#fff"></circle>
+    <circle cx="231" cy="191" r="2.5" fill="#fff"></circle>
+
+    <!-- nose + mouth -->
+    <path d="M188 240 Q200 250 212 240 L206 232 L194 232 Z" fill="var(--text-dark)"></path>
+    <path d="M200 250 Q200 262 186 268" stroke="var(--text-dark)" stroke-width="3" fill="none" stroke-linecap="round"></path>
+    <path d="M200 250 Q200 262 214 268" stroke="var(--text-dark)" stroke-width="3" fill="none" stroke-linecap="round"></path>
+
+    <!-- whiskers -->
+    <g stroke="var(--text-soft)" stroke-width="2" stroke-linecap="round">
+      <line x1="150" y1="240" x2="115" y2="232"></line>
+      <line x1="150" y1="250" x2="113" y2="250"></line>
+      <line x1="250" y1="240" x2="285" y2="232"></line>
+      <line x1="250" y1="250" x2="287" y2="250"></line>
+    </g>
+
+    <!-- body / chest -->
+    <ellipse cx="200" cy="330" rx="78" ry="55" fill="var(--face)"></ellipse>
+
+    <!-- heart button -->
+    <g id="heartBtn" class="heart-btn" tabindex="0" role="button" aria-label="Presiona el corazón del león para revelar la carta">
+      <g transform="translate(145 276.7) scale(0.15)">
+        <path d="M200 300
+               C 188 288, 164 292, 164 312
+               C 164 330, 186 344, 200 356
+               C 214 344, 236 330, 236 312
+               C 236 292, 212 288, 200 300 Z"
+            fill="var(--heart)" stroke="var(--heart-dark)" stroke-width="2"></path>
+      </g>
+    </g>
+  </svg>
+</div>
+
+<p class="instructions" id="hint">Presiona</p>
+
+<div class="card-overlay" id="overlay">
+  <div class="card">
+    <svg class="card-heart" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 21s-7.5-4.6-10-9.1C0.3 8.6 1.7 5 5.3 4.1c2-.5 4 .3 5.2 2 1.2-1.7 3.2-2.5 5.2-2 3.6.9 5 4.5 3.3 7.8C19.5 16.4 12 21 12 21z"/>
+    </svg>
+    <h2>El punto rojo - Era tu corazon</h2>
+    <p>Raro no?, porque alguien tan fuerte tiene algo tan delicado, porque alguien que parece poder con todo también puede tener una parte que necesita tanto cuidado.
+      Quizá porque ser fuerte no significa no sentir, sino aprender a seguir adelante incluso cuando algo duele. Y creo que esa parte de ti, aunque delicada, también es una de las cosas que te hace especial.
+      
+    </p>
+    <button class="close" id="closeBtn">Guardar la carta</button>
+  </div>
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const heartBtn = document.getElementById('heartBtn');
+  const overlay = document.getElementById('overlay');
+  const closeBtn = document.getElementById('closeBtn');
+  const hint = document.getElementById('hint');
+
+  function openCard(){
+    stage.classList.add('launched');
+    overlay.classList.add('show');
+    hint.textContent = '¡Aquí tienes!';
+  }
+  function closeCard(){
+    overlay.classList.remove('show');
+    hint.textContent = 'Tócalo de nuevo si quieres releerla';
+  }
+
+  heartBtn.addEventListener('click', openCard);
+  heartBtn.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openCard(); }
+  });
+  closeBtn.addEventListener('click', closeCard);
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeCard(); });
+</script>
+</body>
+</html>
